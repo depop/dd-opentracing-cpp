@@ -112,7 +112,7 @@ OptionalSamplingPriority WritingSpanBuffer::getSamplingPriorityImpl(uint64_t tra
     return nullptr;
   }
   if (trace->second.sampling_priority == nullptr) {
-    return std::make_unique<SamplingPriority>(new SamplingPriority(1));
+    return std::make_unique<SamplingPriority>(new SamplingPriority(SamplingPriority::SamplerKeep));
   }
   return std::make_unique<SamplingPriority>(*trace->second.sampling_priority);
 }
@@ -141,7 +141,7 @@ OptionalSamplingPriority WritingSpanBuffer::setSamplingPriorityImpl(
     return getSamplingPriorityImpl(trace_id);
   }
   if (priority == nullptr) {
-    trace.sampling_priority.reset(new SamplingPriority(1));
+    trace.sampling_priority.reset(new SamplingPriority(SamplingPriority::SamplerKeep));
   } else {
     trace.sampling_priority.reset(new SamplingPriority(*priority));
     if (*priority == SamplingPriority::SamplerDrop || *priority == SamplingPriority::SamplerKeep) {

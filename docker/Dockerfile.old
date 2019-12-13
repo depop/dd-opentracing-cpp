@@ -1,0 +1,10 @@
+FROM debian:stretch
+
+RUN apt-get update
+RUN apt-get -y install build-essential cmake wget
+
+COPY . /dd-opentracing-cpp
+RUN /dd-opentracing-cpp/scripts/install_dependencies.sh
+RUN mkdir /dd-opentracing-cpp/.build; cd /dd-opentracing-cpp/.build; cmake ..
+RUN cd /dd-opentracing-cpp/.build; make
+RUN cd /dd-opentracing-cpp/.build; make install

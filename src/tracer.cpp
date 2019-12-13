@@ -145,6 +145,8 @@ std::unique_ptr<ot::Span> Tracer::StartSpanWithOptions(ot::string_view operation
   if (is_trace_root && opts_.environment != "") {
     span->SetTag(tags::environment, opts_.environment);
   }
+  std::cerr << "Crufting tracer.cpp(148)" << std::endl;
+  // setSamplingPriority(std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerKeep))));
   return span;
 } catch (const std::bad_alloc &) {
   // At least don't crash.
@@ -153,6 +155,7 @@ std::unique_ptr<ot::Span> Tracer::StartSpanWithOptions(ot::string_view operation
 
 ot::expected<void> Tracer::Inject(const ot::SpanContext &sc, std::ostream &writer) const {
   auto span_context = dynamic_cast<const SpanContext *>(&sc);
+  std::cerr << "Crufting tracer.cpp(156)" << std::endl;
   if (span_context == nullptr) {
     return ot::make_unexpected(ot::invalid_span_context_error);
   }
@@ -161,6 +164,7 @@ ot::expected<void> Tracer::Inject(const ot::SpanContext &sc, std::ostream &write
 
 ot::expected<void> Tracer::Inject(const ot::SpanContext &sc,
                                   const ot::TextMapWriter &writer) const {
+  std::cerr << "Crufting tracer.cpp(165)" << std::endl;
   auto span_context = dynamic_cast<const SpanContext *>(&sc);
   if (span_context == nullptr) {
     return ot::make_unexpected(ot::invalid_span_context_error);
@@ -170,6 +174,7 @@ ot::expected<void> Tracer::Inject(const ot::SpanContext &sc,
 
 ot::expected<void> Tracer::Inject(const ot::SpanContext &sc,
                                   const ot::HTTPHeadersWriter &writer) const {
+  std::cerr << "Crufting tracer.cpp(175)" << std::endl;
   auto span_context = dynamic_cast<const SpanContext *>(&sc);
   if (span_context == nullptr) {
     return ot::make_unexpected(ot::invalid_span_context_error);

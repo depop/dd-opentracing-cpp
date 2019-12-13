@@ -362,8 +362,10 @@ void Span::Log(
 OptionalSamplingPriority Span::setSamplingPriority(
     std::unique_ptr<UserSamplingPriority> user_priority) {
   std::lock_guard<std::mutex> lock_guard{mutex_};
+  std::cerr << "Crufting span.cpp(365)" << std::endl;
   OptionalSamplingPriority priority(nullptr);
   if (user_priority != nullptr) {
+    std::cerr << "Crufting span.cpp(368)" << std::endl;
     priority = asSamplingPriority(static_cast<int>(*user_priority));
   }
   return buffer_->setSamplingPriority(context_.traceId(), std::move(priority));

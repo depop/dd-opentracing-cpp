@@ -187,6 +187,8 @@ OptionalSamplingPriority SpanContext::getPropagatedSamplingPriority() const {
   OptionalSamplingPriority p = nullptr;
   if (propagated_sampling_priority_ != nullptr) {
     p.reset(new SamplingPriority(*propagated_sampling_priority_));
+    std::cerr << "Crufting propagation.cpp(190)" << std::endl;
+    // p.reset(new SamplingPriority(SamplingPriority::SamplerKeep));
   }
   return p;
 }

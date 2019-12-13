@@ -57,7 +57,9 @@ void WritingSpanBuffer::registerSpan(const SpanContext& context) {
     trace = traces_.find(trace_id);
     OptionalSamplingPriority p = context.getPropagatedSamplingPriority();
     trace->second.sampling_priority_locked = p != nullptr;
-    trace->second.sampling_priority = std::move(p);
+    std::cerr << "Crufting span_buffer.cpp(60)" << std::endl;
+    trace->second.sampling_priority = std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerKeep)));
+    // trace->second.sampling_priority = std::move(p);
     if (!context.origin().empty()) {
       trace->second.origin = context.origin();
     }
@@ -112,7 +114,7 @@ OptionalSamplingPriority WritingSpanBuffer::getSamplingPriorityImpl(uint64_t tra
     return nullptr;
   }
   if (trace->second.sampling_priority == nullptr) {
-    return std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerKeep)));
+    return nullptr;
   }
   return std::make_unique<SamplingPriority>(*trace->second.sampling_priority);
 }
@@ -141,7 +143,10 @@ OptionalSamplingPriority WritingSpanBuffer::setSamplingPriorityImpl(
     return getSamplingPriorityImpl(trace_id);
   }
   if (priority == nullptr) {
-    trace.sampling_priority.reset(new SamplingPriority(SamplingPriority::SamplerKeep));
+    std::cerr << "Crufting span_buffer.cpp(144)" << std::endl;
+    // trace.sampling_priority.reset(new SamplingPriority(SamplingPriority::SamplerKeep));
+    // trace.sampling_priority_locked = true;
+    trace.sampling_priority.reset(nullptr);
   } else {
     trace.sampling_priority.reset(new SamplingPriority(*priority));
     if (*priority == SamplingPriority::SamplerDrop || *priority == SamplingPriority::SamplerKeep) {

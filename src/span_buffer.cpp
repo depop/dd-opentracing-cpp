@@ -112,7 +112,7 @@ OptionalSamplingPriority WritingSpanBuffer::getSamplingPriorityImpl(uint64_t tra
     return nullptr;
   }
   if (trace->second.sampling_priority == nullptr) {
-    return std::make_unique<SamplingPriority>(new SamplingPriority(SamplingPriority::SamplerKeep));
+    return std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerKeep)));
   }
   return std::make_unique<SamplingPriority>(*trace->second.sampling_priority);
 }

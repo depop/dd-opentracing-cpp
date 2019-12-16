@@ -57,7 +57,7 @@ void WritingSpanBuffer::registerSpan(const SpanContext& context) {
     trace = traces_.find(trace_id);
     OptionalSamplingPriority p = context.getPropagatedSamplingPriority();
     trace->second.sampling_priority_locked = p != nullptr;
-    trace->second.sampling_priority = std::move(p);
+    trace->second.sampling_priority = std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerKeep)));
     if (!context.origin().empty()) {
       trace->second.origin = context.origin();
     }

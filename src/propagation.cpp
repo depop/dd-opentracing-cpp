@@ -276,6 +276,7 @@ ot::expected<void> SpanContext::serialize(const ot::TextMapWriter &writer,
                                           const HeadersImpl &headers_impl,
                                           bool prioritySamplingEnabled) const {
   std::lock_guard<std::mutex> lock{mutex_};
+  (void)prioritySamplingEnabled;
   auto result = writer.Set(headers_impl.trace_id_header, headers_impl.encode_id(trace_id_));
   if (!result) {
     return result;
@@ -285,26 +286,24 @@ ot::expected<void> SpanContext::serialize(const ot::TextMapWriter &writer,
     return result;
   }
 
-  if (prioritySamplingEnabled) {
-    OptionalSamplingPriority sampling_priority = pending_traces->getSamplingPriority(trace_id_);
-    if (sampling_priority != nullptr) {
-      result = writer.Set(headers_impl.sampling_priority_header,
-                          headers_impl.encode_sampling_priority(*sampling_priority));
+  OptionalSamplingPriority sampling_priority = pending_traces->getSamplingPriority(trace_id_);
+  if (sampling_priority != nullptr) {
+    result = writer.Set(headers_impl.sampling_priority_header,
+                        headers_impl.encode_sampling_priority(*sampling_priority));
+    if (!result) {
+      return result;
+    }
+    if (!origin_.empty()) {
+      result = writer.Set(headers_impl.origin_header, origin_);
       if (!result) {
         return result;
       }
-      if (!origin_.empty()) {
-        result = writer.Set(headers_impl.origin_header, origin_);
-        if (!result) {
-          return result;
-        }
-      }
-    } else if (nginx_opentracing_compatibility_hack_) {
-      // See the comment in the header file on nginx_opentracing_compatibility_hack_.
-      result = writer.Set(headers_impl.sampling_priority_header, "1");
-      if (!result) {
-        return result;
-      }
+    }
+  } else if (nginx_opentracing_compatibility_hack_) {
+    // See the comment in the header file on nginx_opentracing_compatibility_hack_.
+    result = writer.Set(headers_impl.sampling_priority_header, "1");
+    if (!result) {
+      return result;
     }
   }
 

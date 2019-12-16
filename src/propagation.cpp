@@ -229,17 +229,15 @@ ot::expected<void> SpanContext::serialize(std::ostream &writer,
   if (!writer.good()) {
     return ot::make_unexpected(std::make_error_code(std::errc::io_error));
   }
-
+  (void)prioritySamplingEnabled; // Avoiding "unused parameter" errors without changing the function signature.
   json j;
   // JSON numbers only support 64bit IEEE 754, so we encode these as strings.
   j[json_trace_id_key] = std::to_string(trace_id_);
   j[json_parent_id_key] = std::to_string(id_);
   OptionalSamplingPriority sampling_priority = pending_traces->getSamplingPriority(trace_id_);
-  if (sampling_priority != nullptr && prioritySamplingEnabled) {
-    j[json_sampling_priority_key] = static_cast<int>(*sampling_priority);
-    if (!origin_.empty()) {
-      j[json_origin_key] = origin_;
-    }
+  j[json_sampling_priority_key] = static_cast<int>(*sampling_priority);
+  if (!origin_.empty()) {
+    j[json_origin_key] = origin_;
   }
   j[json_baggage_key] = baggage_;
 
@@ -276,7 +274,7 @@ ot::expected<void> SpanContext::serialize(const ot::TextMapWriter &writer,
                                           const HeadersImpl &headers_impl,
                                           bool prioritySamplingEnabled) const {
   std::lock_guard<std::mutex> lock{mutex_};
-  (void)prioritySamplingEnabled;
+  (void)prioritySamplingEnabled; // Avoiding "unused parameter" errors without changing the function signature.
   auto result = writer.Set(headers_impl.trace_id_header, headers_impl.encode_id(trace_id_));
   if (!result) {
     return result;

@@ -108,8 +108,8 @@ OptionalSamplingPriority WritingSpanBuffer::getSamplingPriority(uint64_t trace_i
 OptionalSamplingPriority WritingSpanBuffer::getSamplingPriorityImpl(uint64_t trace_id) const {
   auto trace = traces_.find(trace_id);
   if (trace == traces_.end()) {
-    std::cerr << "Missing trace in getSamplingPriority" << std::endl;
-    return nullptr;
+    // Returning a zero here seems valid.
+    return std::make_unique<SamplingPriority>(*(new SamplingPriority(SamplingPriority::SamplerDrop)));
   }
   if (trace->second.sampling_priority == nullptr) {
     return nullptr;
